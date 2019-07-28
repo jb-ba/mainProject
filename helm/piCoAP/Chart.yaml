@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: "v0.0.1arm"
 description: A Helm chart for Kubernetes
 name: picoap
-version: 0.0.1
+version: 0.1.0
