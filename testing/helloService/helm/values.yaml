@@ -14,7 +14,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: nodePort
+  type: NodePort
   port: 80
 
 ingress:
