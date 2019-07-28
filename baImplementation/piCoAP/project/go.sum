@@ -2,8 +2,6 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-ocf/go-coap v0.0.0-20190724112633-4d60089651df h1:YJC+EkKz+8hiHF3f9JTGlrHi0oTwzyDppkhkqFMuEiY=
 github.com/go-ocf/go-coap v0.0.0-20190724112633-4d60089651df/go.mod h1:BfsrAO44kduYzuyPp+993pDv4n3TkFjVVShIIo7k3/U=
-github.com/golang/protobuf v1.3.2 h1:6nsPYzhq5kReh6QImI3k5qWzO4PEbvbIW2cwSfR/6xs=
-github.com/golang/protobuf v1.3.2/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/pion/dtls v1.5.0 h1:GtN3DJ0Fv5wC/Y04uOXT1zPeGA4C3HrsP1aAKsIBiU8=
 github.com/pion/dtls v1.5.0/go.mod h1:CjlPLfQdsTg3G4AEXjJp8FY5bRweBlxHrgoFrN+fQsk=
 github.com/pion/logging v0.2.1 h1:LwASkBKZ+2ysGJ+jLv1E/9H1ge0k1nTfi1X+5zirkDk=

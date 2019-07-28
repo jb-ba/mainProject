@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "picoap.fullname" . }}
+  labels:
+{{ include "picoap.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      nodePort: 30002
+      port: 5688
+      targetPort: 5688
+      protocol: UDP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "picoap.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

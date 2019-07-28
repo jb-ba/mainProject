@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+  namespace: hello-namespace
+spec:
+  selector:
+    matchLabels:
+      app: hello
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v5arm
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - pihome
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: env
+                    operator: In
+                    values:
+                      - test
+              topologyKey: "kubernetes.io/hostname"
+      nodeSelector:
+        pi: "hello"
+      containers:
+        - name: hello
+          image: jonas27/hello:v5arm
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
