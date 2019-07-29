@@ -6,8 +6,8 @@ replicaCount: 1
 
 image:
   repository: jbba/picoap
-  tag: v0.0.5arm
-  pullPolicy: IfNotPresent
+  tag: v0.0.6arm
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
