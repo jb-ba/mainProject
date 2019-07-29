@@ -1,8 +1,0 @@
-syntax = "proto2";
-import "nanopb.proto";  
-
-message ButtonMessage {
-  required int32 milli = 1;
-  required int32 sec = 2;
-  required string label = 3 [(nanopb).max_size = 40];
-}
