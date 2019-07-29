@@ -11,7 +11,7 @@ import (
 
 func TestClient(*testing.T) {
 	log.Println("testing")
-	co, err := coap.Dial("udp", "195.249.187.164:5688")
+	co, err := coap.Dial("udp", "195.249.187.164:30002")
 	// co, err := coap.Dial("udp", "10.3.141.1:5688")
 	if err != nil {
 		log.Fatalf("Error dialing: %v", err)

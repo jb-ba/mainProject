@@ -1,17 +1,25 @@
 #include "WiFi.h"        // ESP32 WiFi include
-#include "coap_client.h" //
-// #include "WiFiConfig.h" // My WiFi configuration.
-// this will assign the name PushButton to pin numer 15
-const int PushButton = 14;
-// Wifi configurations
-const char *SSID = "joeWifi";
-const char *WiFiPassword = "badPasswordsAreEasy";
-//instance for coapclient
-coapClient coap;
+#include "coap_client.h" // for coap
+#include "pb_common.h"   // for proto
+#include "pb.h"          // for proto
+// #include "pb_common.c"     // for proto
+// #include "pb_encode.c"     // for proto
+// #include "pb_decode.c"     // for proto
+#include "pb_encode.h" // for proto
+#include "notify.pb.h" // include protofile
+// *pb_encode.c*, *pb_decode.c* and *pb_common.c*
+
+const int PushButtonPin = 14;
+const char *SSID = "joeWifi";                     // Wifi configurations
+const char *WiFiPassword = "badPasswordsAreEasy"; // Wifi configurations
+
+coapClient coap; //instance for coapclient
 String DEVICE_SECRET_KEY = "your-device_secret_key";
 
 IPAddress ip(0, 0, 0, 0);
 int port = 5688;
+
+uint8_t buffer[128]; // buffer for protobuf
 
 // void callback_response(coapPacket &packet, IPAddress ip, int port);
 
@@ -38,7 +46,7 @@ void setup()
     Serial.begin(115200);
     Serial.print("setup");
     // This statement will declare pin 15 as digital input
-    pinMode(PushButton, INPUT);
+    pinMode(PushButtonPin, INPUT);
     coap.response(callback_response);
     // client response callback.
     // this endpoint is single callback.
@@ -87,7 +95,7 @@ void checkInput()
 {
     // digitalRead function stores the Push button state
     // in variable push_button_state
-    int Push_button_state = digitalRead(PushButton);
+    int Push_button_state = digitalRead(PushButtonPin);
     // if condition checks if push button is pressed
     if (Push_button_state == HIGH)
     {
@@ -102,7 +110,7 @@ void sendStuff()
     // root["data"] = 21.5;
     // root["accessToken"] = DEVICE_SECRET_KEY;
 
-    // String data;
+    String data;
     // root.printTo(data);
     char dataChar[data.length() + 1];
     data.toCharArray(dataChar, data.length() + 1);
@@ -119,4 +127,34 @@ void sendStuff()
     coap.loop();
 
     delay(1000);
+    genMessage();
 }
+
+// /*
+void genMessage()
+{
+    ButtonMessage msg = ButtonMessage_init_zero;
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+
+    msg.milli = 111;
+    msg.sec = 13;
+    char name[] = "urgent";
+    strncpy(msg.label, name, strlen(name));
+    bool status = pb_encode(&stream, ButtonMessage_fields, &msg);
+    if (!status)
+    {
+        Serial.println("Failed to encode");
+        return;
+    }
+
+    Serial.print("Message Length: ");
+    Serial.println(stream.bytes_written);
+
+    Serial.print("Message: ");
+
+    for (int i = 0; i < stream.bytes_written; i++)
+    {
+        Serial.printf("%02X", buffer[i]);
+    }
+}
+// */

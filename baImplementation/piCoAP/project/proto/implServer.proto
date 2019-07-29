@@ -1,7 +1,0 @@
-syntax = "proto2";
-
-package tutorial;
-
-message Time {
-  required string time = 1;
-}
