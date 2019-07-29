@@ -53,7 +53,7 @@ func handleD(w coap.ResponseWriter, req *coap.Request) {
 			log.Printf("Cannot send response: %v", err)
 		}
 	}
-	log.Println(data)
+	log.Println(msg)
 }
 
 func main() {

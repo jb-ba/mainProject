@@ -108,23 +108,23 @@ void sendStuff()
     // root["data"] = 21.5;
     // root["accessToken"] = DEVICE_SECRET_KEY;
 
-    String data = "hallo";
+    // String data = "hallo";
     // root.printTo(data);
-    char dataChar[data.length() + 1];
-    data.toCharArray(dataChar, data.length() + 1);
+    // char dataChar[data.length() + 1];
+    // data.toCharArray(dataChar, data.length() + 1);
     // bool state;
 
     //post request
     //arguments server ip address,default port,resource name, payload,payloadlength
     // int msgid = coap.post(ip, port, path, dataChar, data.length());
     coap.response(callback_response);
-    int msgid = coap.get(ip, port, "a");
-    msgid = coap.post(ip, port, "c", dataChar, data.length());
-    Serial.println(String(msgid));
+    // int msgid = coap.get(ip, port, "a");
+    // msgid = coap.post(ip, port, "c", dataChar, data.length());
+    // Serial.println(String(msgid));
 
-    coap.loop();
+    // coap.loop();
 
-    delay(1000);
+    // delay(1000);
     genMessage();
 }
 
