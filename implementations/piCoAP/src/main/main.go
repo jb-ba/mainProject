@@ -42,7 +42,7 @@ func handleD(w coap.ResponseWriter, req *coap.Request) {
 	log.Printf("Got message in handleC: path=%q: %#v from %v", req.Msg.Path(), string(req.Msg.Payload()), req.Client.RemoteAddr())
 	msg := &ButtonMessage{}
 	data := []byte{}
-	err := proto.Unmarshal(data, msg)
+	err := proto.Unmarshal(req.Msg.Payload(), msg)
 	if err != nil {
 		log.Fatal("unmarshaling error: ", err)
 		resp := w.NewResponse(coap.Content)
@@ -53,6 +53,7 @@ func handleD(w coap.ResponseWriter, req *coap.Request) {
 			log.Printf("Cannot send response: %v", err)
 		}
 	}
+	log.Println(data)
 }
 
 func main() {

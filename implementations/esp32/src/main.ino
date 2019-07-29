@@ -17,9 +17,7 @@ coapClient coap; //instance for coapclient
 String DEVICE_SECRET_KEY = "your-device_secret_key";
 
 IPAddress ip(0, 0, 0, 0);
-int port = 5688;
-
-uint8_t buffer[128]; // buffer for protobuf
+int port = 30002;
 
 // void callback_response(coapPacket &packet, IPAddress ip, int port);
 
@@ -110,7 +108,7 @@ void sendStuff()
     // root["data"] = 21.5;
     // root["accessToken"] = DEVICE_SECRET_KEY;
 
-    String data;
+    String data = "hallo";
     // root.printTo(data);
     char dataChar[data.length() + 1];
     data.toCharArray(dataChar, data.length() + 1);
@@ -133,6 +131,9 @@ void sendStuff()
 // /*
 void genMessage()
 {
+    uint8_t buffer[128];
+    // uint16_t packetSize;
+
     ButtonMessage msg = ButtonMessage_init_zero;
     pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
 
@@ -141,11 +142,15 @@ void genMessage()
     char name[] = "urgent";
     strncpy(msg.label, name, strlen(name));
     bool status = pb_encode(&stream, ButtonMessage_fields, &msg);
+    // packetSize = stream.bytes_written;
     if (!status)
     {
         Serial.println("Failed to encode");
         return;
     }
+
+    int msgid = coap.post(ip, port, "d", (char *)buffer, stream.bytes_written);
+    delay(1000);
 
     Serial.print("Message Length: ");
     Serial.println(stream.bytes_written);
