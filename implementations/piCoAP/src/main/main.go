@@ -40,21 +40,39 @@ func handleC(w coap.ResponseWriter, req *coap.Request) {
 
 func handleD(w coap.ResponseWriter, req *coap.Request) {
 	log.Printf("Got message in handleC: path=%q: %#v from %v", req.Msg.Path(), string(req.Msg.Payload()), req.Client.RemoteAddr())
+	log.Printf("The payload is %#v", req.Msg.Payload())
 	msg := &ButtonMessage{}
-	data := []byte{}
+	// data := []byte{}
 	err := proto.Unmarshal(req.Msg.Payload(), msg)
 	if err != nil {
 		log.Fatal("unmarshaling error: ", err)
-		resp := w.NewResponse(coap.Content)
-		resp.SetOption(coap.ContentFormat, coap.TextPlain)
-		resp.SetPayload([]byte("Received your stuff!"))
-		log.Printf("Transmitting from C %#v", resp)
-		if err := w.WriteMsg(resp); err != nil {
-			log.Printf("Cannot send response: %v", err)
-		}
 	}
-	log.Println(msg)
+	resp := w.NewResponse(coap.Content)
+	resp.SetOption(coap.ContentFormat, coap.TextPlain)
+	resp.SetPayload([]byte("Received your stuff!"))
+	log.Printf("Transmitting from C %#v", resp)
+	if err := w.WriteMsg(resp); err != nil {
+		log.Printf("Cannot send response: %v", err)
+	}
+	log.Println(msg.Milli)
+	log.Println(msg.Sec)
+	log.Println(msg.Label)
 }
+
+// func test(){
+// 	input := []byte("086F100D1A06757267656E74")
+// 	// log.Println(input)
+// 	msg := &ButtonMessage{}
+// 	// data := []byte{}
+// 	err := proto.Unmarshal(input, msg)
+// 	if err != nil {
+// 		log.Fatal("unmarshaling error: ", err)
+// 	}
+// 	log.Println(msg.Milli)
+// 	log.Println(msg.Sec)
+// 	log.Println(msg.Label)
+	
+// }
 
 func main() {
 	mux := coap.NewServeMux()
@@ -62,6 +80,7 @@ func main() {
 	mux.Handle("/b", coap.HandlerFunc(handleB))
 	mux.Handle("/c", coap.HandlerFunc(handleC))
 	mux.Handle("/d", coap.HandlerFunc(handleC))
+	// test();
 
 	log.Fatal(coap.ListenAndServe("udp", ":5688", mux))
 }
