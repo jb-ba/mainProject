@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: jonas27/hello
-  tag: v5arm
+  repository: jbba/
+  tag: v0.0.1
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

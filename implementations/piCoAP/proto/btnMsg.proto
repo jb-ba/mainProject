@@ -1,0 +1,10 @@
+syntax = "proto2";
+
+package main;
+
+message ButtonMessage {
+  required int32 building = 1;
+  required int32 room = 2;
+  required bool ledOn = 3;
+  required string label = 4;
+}

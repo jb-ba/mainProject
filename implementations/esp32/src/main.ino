@@ -2,12 +2,11 @@
 #include "coap_client.h" // for coap
 #include "pb_common.h"   // for proto
 #include "pb.h"          // for proto
-// #include "pb_common.c"     // for proto
-// #include "pb_encode.c"     // for proto
-// #include "pb_decode.c"     // for proto
-#include "pb_encode.h" // for proto
-#include "notify.pb.h" // include protofile
-// *pb_encode.c*, *pb_decode.c* and *pb_common.c*
+#include "pb_encode.h"   // for proto
+#include "notify.pb.h"   // include protofile
+#include <ESPmDNS.h>     // for OTA update
+#include <WiFiUdp.h>     // for OTA update
+#include <ArduinoOTA.h>  // for OTA update
 
 const int PushButtonPin = 14;
 const char *SSID = "joeWifi";                     // Wifi configurations
@@ -16,10 +15,13 @@ const char *WiFiPassword = "badPasswordsAreEasy"; // Wifi configurations
 coapClient coap; //instance for coapclient
 String DEVICE_SECRET_KEY = "your-device_secret_key";
 
-IPAddress ip(0, 0, 0, 0);
-int port = 30002;
+IPAddress ip(10, 3, 141, 1);
+// int port = 30002;
+int port = 5688;
 
-// void callback_response(coapPacket &packet, IPAddress ip, int port);
+// for led control
+int ledPin = 27;
+bool ledOn = false;
 
 // coap client response callback
 void callback_response(coapPacket &packet, IPAddress ip, int port)
@@ -36,19 +38,23 @@ void callback_response(coapPacket &packet, IPAddress ip, int port)
 
     Serial.println(p);
 }
+// observe(IPAddress ip, int port, char *url, uint8_t optionbuffer)
+void observeLedStatus()
+{
+    int msgid = coap.observe(ip, port, "observe", 0);
+    Serial.println("observing");
+    Serial.println(msgid);
+}
 
 // This Setup function is used to initialize everything
 void setup()
 {
-    // Start serial connection
     Serial.begin(115200);
     Serial.print("setup");
-    // This statement will declare pin 15 as digital input
+    pinMode(ledPin, OUTPUT);
     pinMode(PushButtonPin, INPUT);
     coap.response(callback_response);
-    // client response callback.
-    // this endpoint is single callback.
-    // coap.start(9999);
+    // otaUpdate();
 }
 
 void loop()
@@ -57,9 +63,12 @@ void loop()
     if (WiFi.status() != WL_CONNECTED)
     {
         ConnectToWiFi();
+        observeLedStatus();
     }
     else
     {
+        coap.loop();
+        ensureLed();
         checkInput();
     }
 }
@@ -75,91 +84,102 @@ void ConnectToWiFi()
     uint8_t i = 0;
     while (WiFi.status() != WL_CONNECTED)
     {
-        Serial.print('.');
         delay(500);
-
-        if ((++i % 16) == 0)
-        {
-            Serial.println(F(" still trying to connect"));
-        }
     }
     ip = WiFi.gatewayIP();
-    Serial.print(F("Connected. My IP address is: "));
-    Serial.println(WiFi.localIP());
-    Serial.println(WiFi.gatewayIP());
 }
 
-void checkInput()
+// just checks that bool and ledPin output are the same
+void ensureLed()
 {
-    // digitalRead function stores the Push button state
-    // in variable push_button_state
-    int Push_button_state = digitalRead(PushButtonPin);
-    // if condition checks if push button is pressed
-    if (Push_button_state == HIGH)
+    if (ledOn)
     {
-        Serial.println("high");
-        sendStuff();
+        digitalWrite(ledPin, HIGH);
+    }
+    else
+    {
+        digitalWrite(ledPin, LOW);
     }
 }
 
-void sendStuff()
+// checks if push button is pressed
+void checkInput()
 {
-    // root["name"] = "temperature";
-    // root["data"] = 21.5;
-    // root["accessToken"] = DEVICE_SECRET_KEY;
-
-    // String data = "hallo";
-    // root.printTo(data);
-    // char dataChar[data.length() + 1];
-    // data.toCharArray(dataChar, data.length() + 1);
-    // bool state;
-
-    //post request
-    //arguments server ip address,default port,resource name, payload,payloadlength
-    // int msgid = coap.post(ip, port, path, dataChar, data.length());
-    coap.response(callback_response);
-    // int msgid = coap.get(ip, port, "a");
-    // msgid = coap.post(ip, port, "c", dataChar, data.length());
-    // Serial.println(String(msgid));
-
-    // coap.loop();
-
-    // delay(1000);
-    genMessage();
+    if (digitalRead(PushButtonPin) == HIGH)
+    {
+        if (ledOn)
+        {
+            digitalWrite(ledPin, LOW);
+            ledOn = false;
+        }
+        else
+        {
+            digitalWrite(ledPin, HIGH);
+            ledOn = true;
+        }
+        sendClick();
+    }
 }
 
-// /*
-void genMessage()
+void sendClick()
 {
     uint8_t buffer[128];
-    // uint16_t packetSize;
 
     ButtonMessage msg = ButtonMessage_init_zero;
     pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
 
-    msg.milli = 111;
-    msg.sec = 13;
-    char name[] = "urgent";
+    msg.building = 111;
+    msg.room = 13;
+    msg.ledOn = ledOn;
+    char name[] = "front";
     strncpy(msg.label, name, strlen(name));
     bool status = pb_encode(&stream, ButtonMessage_fields, &msg);
-    // packetSize = stream.bytes_written;
     if (!status)
     {
         Serial.println("Failed to encode");
         return;
     }
 
-    int msgid = coap.post(ip, port, "d", (char *)buffer, stream.bytes_written);
+    int msgid = coap.post(ip, port, "clicked", (char *)buffer, stream.bytes_written);
     delay(1000);
-
-    Serial.print("Message Length: ");
-    Serial.println(stream.bytes_written);
-
-    Serial.print("Message: ");
-
-    for (int i = 0; i < stream.bytes_written; i++)
-    {
-        Serial.printf("%02X", buffer[i]);
-    }
 }
-// */
+
+// void otaUpdate()
+// {
+//     ArduinoOTA
+//         .onStart([]() {
+//             String type;
+//             if (ArduinoOTA.getCommand() == U_FLASH)
+//                 type = "sketch";
+//             else // U_SPIFFS
+//                 type = "filesystem";
+
+//             // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+//             Serial.println("Start updating " + type);
+//         })
+//         .onEnd([]() {
+//             Serial.println("\nEnd");
+//         })
+//         .onProgress([](unsigned int progress, unsigned int total) {
+//             Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+//         })
+//         .onError([](ota_error_t error) {
+//             Serial.printf("Error[%u]: ", error);
+//             if (error == OTA_AUTH_ERROR)
+//                 Serial.println("Auth Failed");
+//             else if (error == OTA_BEGIN_ERROR)
+//                 Serial.println("Begin Failed");
+//             else if (error == OTA_CONNECT_ERROR)
+//                 Serial.println("Connect Failed");
+//             else if (error == OTA_RECEIVE_ERROR)
+//                 Serial.println("Receive Failed");
+//             else if (error == OTA_END_ERROR)
+//                 Serial.println("End Failed");
+//         });
+
+//     ArduinoOTA.begin();
+
+//     Serial.println("Ready");
+//     Serial.print("IP address: ");
+//     Serial.println(WiFi.localIP());
+// }
