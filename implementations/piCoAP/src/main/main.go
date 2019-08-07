@@ -15,6 +15,7 @@ var (
 	lastLedState     bool
 	lastTurnOnTime   time.Time
 	currentOnTimeSec int32
+	serviceAddr		"hallo"
 )
 
 func observeLed(w coap.ResponseWriter, req *coap.Request) {
@@ -62,18 +63,6 @@ func handleClick(w coap.ResponseWriter, req *coap.Request) {
 	}
 	// respond(&w)
 	log.Println(strconv.Itoa(int(*msg.Building)) + " ; " + strconv.Itoa(int(*msg.Room)) + " ; " + *msg.Label)
-}
-
-func respond(wi *coap.ResponseWriter) {
-	w := *wi
-	resp := w.NewResponse(coap.Content)
-	resp.SetOption(coap.ContentFormat, coap.TextPlain)
-	resp.SetPayload([]byte("Received your stuff!"))
-	log.Println()
-	log.Printf("Transmitting from D %#v", resp)
-	if err := w.WriteMsg(resp); err != nil {
-		log.Printf("Cannot send response: %v", err)
-	}
 }
 
 // uploads data every hour to the server.

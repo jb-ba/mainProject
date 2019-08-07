@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package main;
+package proto;
 
 message ButtonMessage {
   required int32 building = 1;
