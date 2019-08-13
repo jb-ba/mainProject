@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package synchProto;
+
+service Synchronizer {
+  rpc Synch (Device) returns (stream Device) {}
+}
+
+message Device {
+  int32 building = 1;
+  int32 room = 2;
+  bool ledOn = 3;
+  string label = 4;
+  int32 onTime =5;
+}

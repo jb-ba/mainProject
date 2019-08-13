@@ -1,0 +1,30 @@
+{
+  "[go]": {
+    "editor.formatOnSave": true
+  },
+  "go.gotoSymbol.includeImports": true,
+  "go.gopath": "/home/joe/go/",
+  "go.formatTool": "goimports",
+  "go.useLanguageServer": true,
+  "go.alternateTools": {
+    "go.autocompleteUnimportedPackage": true,
+    "go-langserver": "gopls"
+  },
+  "go.toolsEnvVars": {
+    "GO111MODULE": "auto"
+  },
+  "files.associations": {
+    "string_view": "cpp",
+    "array": "cpp",
+    "deque": "cpp",
+    "unordered_map": "cpp",
+    "vector": "cpp",
+    "initializer_list": "cpp"
+  },
+  "go.gocodeFlags": [
+    "-builtin",
+    "-ignore-case",
+    "-unimported-packages",
+    "-exclude-docs"
+  ]
+}

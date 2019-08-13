@@ -1,6 +1,6 @@
 package main
 
-func streamStats(){
+func streamStats() {
 	// conn, err := grpc.Dial(*serverAddr)
 	// if err != nil {
 	// 	// ...

@@ -17,6 +17,9 @@ mkdir -p $HOME/.kube && \
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && \
 sudo chown $USER $HOME/.kube/config
 
+### Print join token
+kubeadm token create --print-join-command
+
 ### Additional components, Flennel and Dashboard
 sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 sudo kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml
