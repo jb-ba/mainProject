@@ -3,6 +3,9 @@
 ## install via
 curl -L https://git.io/getLatestIstio | ISTIO_VERSION=1.2.2 sh -
 
+## add namespace to auto inject
+`kubectl label namespace default istio-injection=enabled`
+
 
 ## Kiali
 For forwarding use
