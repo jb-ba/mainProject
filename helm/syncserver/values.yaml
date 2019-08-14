@@ -48,10 +48,9 @@ nodeSelector: {}
 
 tolerations: [
   {
-    key: "toleration=key",
-    operator: "Equal",
-    value: "value",
-    effect: "NoSchedule",
+    key: "key",
+    operator: "Exists",
+    effect: "NoSchedule"
   }
 ]
 
