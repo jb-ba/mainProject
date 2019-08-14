@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net"
 	pb "statsServer/synchProto"
 	"strconv"
-	"time"
+	"strings"
 
 	grpc "google.golang.org/grpc"
 )
@@ -21,61 +22,53 @@ type synchServer struct {
 
 type streamSlave struct {
 	id        string
+	in        *pb.Device
 	streamOut *pb.Synchronizer_SynchServer
 }
 
 func (s *synchServer) Synch(in *pb.Device, streamOut pb.Synchronizer_SynchServer) error {
-	id := strconv.Itoa(int(in.GetBuilding())) + "-" + strconv.Itoa(int(in.GetRoom())) + "-" + in.Label
+	id := createID(in.GetBuilding(), in.GetRoom(), in.Label)
 	ss := streamSlave{
 		id:        id,
 		streamOut: &streamOut,
 	}
 	slaves[&ss] = make(chan bool)
-	go func() {
-		time.Sleep(5 * time.Second)
-		slaves[&ss] <- true
-	}()
-	go func() {
-		time.Sleep(10 * time.Second)
-		log.Println("wake up")
-		slaves[&ss] <- false
-	}()
+	log.Println(in)
 	for {
 		select {
-		case stat := <-slaves[&ss]:
-			log.Println(stat)
-			streamOut.Send(&pb.Device{
-				Building: 1,
-				Room:     2,
-				Label:    "Back",
-				LedOn:    stat,
-				OnTime:   3,
-			})
-			// default:
-			// 	log.Println("hallo")
+		case on := <-slaves[&ss]:
+			log.Println(on)
+			in.LedOn = on
+			streamOut.Send(in)
 		}
 	}
-	log.Println(&streamOut)
-	log.Println(id)
-	// time.Sleep(5 * time.Second)
-
-	// if err := streamOut.Send(&pb.Device{
-	// 	Building: 1,
-	// 	Room:     2,
-	// 	Label:    "Back",
-	// 	LedOn:    true,
-	// 	OnTime:   3,
-	// }); err != nil {
-	// 	return err
-	// }
 	return nil
 }
+func (s *synchServer) LightSwitcher(ctx context.Context, in *pb.Device) (*pb.Empty, error) {
+	slaves[checkSlaves(createID(in.Building, in.Room, in.Label))] <- in.LedOn
+	return &pb.Empty{}, nil
+}
 
-func checkDevices() {
-	for k, slave := range slaves {
-		log.Println(k)
-		log.Println(&slave)
+func splitID(id string) (int, int, string) {
+	s := strings.Split(id, "-")
+	log.Println(s)
+	b, _ := strconv.Atoi(s[0])
+	r, _ := strconv.Atoi(s[1])
+	return b, r, s[2]
+}
+
+func createID(building int32, room int32, label string) string {
+	log.Println(strconv.Itoa(int(building)) + "-" + strconv.Itoa(int(room)) + "-" + label)
+	return strconv.Itoa(int(building)) + "-" + strconv.Itoa(int(room)) + "-" + label
+}
+
+func checkSlaves(id string) *streamSlave {
+	for slave, _ := range slaves {
+		if slave.id == id {
+			return slave
+		}
 	}
+	return nil
 }
 
 func main() {

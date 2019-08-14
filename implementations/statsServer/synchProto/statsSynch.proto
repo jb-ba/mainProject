@@ -4,6 +4,11 @@ package synchProto;
 
 service Synchronizer {
   rpc Synch (Device) returns (stream Device) {}
+  rpc LightSwitcher (Device) returns (Empty) {}
+}
+
+message Empty {
+
 }
 
 message Device {

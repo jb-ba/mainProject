@@ -26,7 +26,7 @@ func TestSendStats(t *testing.T) {
 		Building: 1,
 		Room:     13,
 		Label:    "Front",
-		LedOn:    true,
+		LedOn:    false,
 		OnTime:   21,
 	}
 
@@ -34,15 +34,29 @@ func TestSendStats(t *testing.T) {
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	// update := &pb.Device{}
-	// i := 1
 	for {
-		// log.Println("test")
-		// log.Println(i)
 		feature, _ := stream.Recv()
 		if feature != nil {
 			log.Println(feature)
 		}
 	}
+}
+
+func TestSwitchLight(t *testing.T) {
+	log.Println("starting TestSwitchLight")
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewSynchronizerClient(conn)
+	d := pb.Device{
+		Building: 1,
+		Room:     13,
+		Label:    "Front",
+		LedOn:    true,
+		OnTime:   21,
+	}
+	c.LightSwitcher(context.Background(), &d)
 
 }
