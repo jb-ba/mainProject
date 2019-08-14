@@ -1,5 +1,11 @@
 # Helm
 
+## create new chart
+Use
+```
+helm create <mychart>
+```
+
 ## install
 Inside the main helm directory of a project execute
 ```

@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-package synchProto;
+package syncProto;
 
 service Synchronizer {
-  rpc Synch (Device) returns (stream Device) {}
+  rpc Sync (Device) returns (stream Device) {}
   rpc LightSwitcher (Device) returns (Empty) {}
+  rpc ListDevices (Empty) returns (stream Device) {}
 }
 
 message Empty {
-
 }
 
 message Device {

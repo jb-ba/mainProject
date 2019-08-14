@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"log"
-	pb "statsServer/synchProto"
+	pb "statsServer/syncProto"
 	"testing"
 
 	grpc "google.golang.org/grpc"
@@ -21,16 +21,16 @@ func TestSendStats(t *testing.T) {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewSynchronizerClient(conn)
+	c := pb.NewSyncronizerClient(conn)
 	d := pb.Device{
 		Building: 1,
-		Room:     13,
+		Room:     14,
 		Label:    "Front",
-		LedOn:    false,
-		OnTime:   21,
+		LedOn:    true,
+		OnTime:   0,
 	}
 
-	stream, err := c.Synch(context.Background(), &d)
+	stream, err := c.Sync(context.Background(), &d)
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
@@ -38,6 +38,9 @@ func TestSendStats(t *testing.T) {
 		feature, _ := stream.Recv()
 		if feature != nil {
 			log.Println(feature)
+		}
+		if stream.Context().Err() != nil {
+			return
 		}
 	}
 }
@@ -49,14 +52,39 @@ func TestSwitchLight(t *testing.T) {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewSynchronizerClient(conn)
+	c := pb.NewSyncronizerClient(conn)
 	d := pb.Device{
 		Building: 1,
-		Room:     13,
+		Room:     14,
 		Label:    "Front",
 		LedOn:    true,
 		OnTime:   21,
 	}
 	c.LightSwitcher(context.Background(), &d)
+	log.Println("hallo")
+
+}
+
+func TestListDevices(t *testing.T) {
+	log.Println("starting TestListDevices")
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewSyncronizerClient(conn)
+	stream, err := c.ListDevices(context.Background(), &pb.Empty{})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	for {
+		feature, _ := stream.Recv()
+		if feature != nil {
+			log.Println(feature)
+		}
+		if stream.Context().Err() != nil {
+			return
+		}
+	}
 
 }

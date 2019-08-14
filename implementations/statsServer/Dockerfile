@@ -1,5 +1,5 @@
 FROM golang as builder
-EXPOSE 5688
+EXPOSE 3000
 COPY . .
 RUN useradd scratchuser && \
     export GOPATH="" && go env  && go mod vendor  && cd src/main && \

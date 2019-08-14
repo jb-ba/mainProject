@@ -1,3 +1,3 @@
 #!/bin/bash
 
-protoc -I synchProto/ synchProto/statsSynch.proto --go_out=plugins=grpc:synchProto
+protoc -I src/syncProto/ src/syncProto/statsSync.proto --go_out=plugins=grpc:src/syncProto
