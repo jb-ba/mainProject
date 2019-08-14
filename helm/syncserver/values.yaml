@@ -1,4 +1,4 @@
-# Default values for syncServer.
+# Default values for syncserver.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: jbba/syncserver
-  tag: alpha
+  tag: v0.0.1
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -15,7 +15,7 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 80
+  # port: 3000
 
 ingress:
   enabled: false
@@ -44,9 +44,15 @@ resources:
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
-
 nodeSelector: {}
 
-tolerations: []
+tolerations: [
+  {
+    key: "toleration=key",
+    operator: "Equal",
+    value: "value",
+    effect: "NoSchedule",
+  }
+]
 
 affinity: {}

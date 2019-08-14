@@ -6,6 +6,10 @@ Use
 helm create <mychart>
 ```
 
+## Check a helm chart
+Use
+`helm lint <dirOfChart>`
+
 ## install
 Inside the main helm directory of a project execute
 ```
