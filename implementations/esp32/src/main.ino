@@ -9,8 +9,8 @@
 #include <ArduinoOTA.h>  // for OTA update
 
 const int PushButtonPin = 14;
-const char *SSID = "joeWifi";                     // Wifi configurations
-const char *WiFiPassword = "badPasswordsAreEasy"; // Wifi configurations
+const char *SSID = "raspi-webgui";     // Wifi configurations
+const char *WiFiPassword = "ChangeMe"; // Wifi configurations
 
 coapClient coap; //instance for coapclient
 String DEVICE_SECRET_KEY = "your-device_secret_key";
@@ -95,10 +95,12 @@ void ensureLed()
     if (ledOn)
     {
         digitalWrite(ledPin, HIGH);
+        Serial.println("LED on");
     }
     else
     {
         digitalWrite(ledPin, LOW);
+        Serial.println("LED off");
     }
 }
 
