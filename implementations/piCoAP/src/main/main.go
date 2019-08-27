@@ -92,6 +92,7 @@ func sendToServer() {
 	}
 	defer conn.Close()
 	c := NewSynchronizerClient(conn)
+	log.Printf("current on time: %v", currentOnTimeSec)
 	d := Device{
 		Building: 111,
 		Room:     13,
