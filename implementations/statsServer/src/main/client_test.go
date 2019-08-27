@@ -11,7 +11,7 @@ import (
 
 const (
 	// address = "localhost:3000"
-	address = "5.189.132.161:30003"
+	address = "burster.fun:30003"
 )
 
 // TestSendStats sends the stats for one light bulb

@@ -115,6 +115,7 @@ func restServer() {
 }
 
 func sayHello(w http.ResponseWriter, r *http.Request) {
+	log.Println("in rest")
 	message := r.URL.Path
 	message = strings.TrimPrefix(message, "/")
 	message = "Hello " + message
