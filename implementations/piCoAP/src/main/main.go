@@ -59,6 +59,7 @@ func handleClick(w coap.ResponseWriter, req *coap.Request) {
 		log.Fatal("unmarshaling error: ", err)
 	}
 	lastLedState = *msg.LedOn
+	log.Printf("led state: %v", lastLedState)
 	if lastLedState {
 		lastTurnOnTime = time.Now()
 	} else {

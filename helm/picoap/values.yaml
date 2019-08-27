@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: jbba/picoap
-  tag: v0.0.9arm
+  tag: v0.0.10arm
   pullPolicy: Always
 
 imagePullSecrets: []
