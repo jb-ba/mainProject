@@ -83,7 +83,7 @@ func uploadTicker() {
 }
 
 func sendToServer() {
-	log.Println("Send to server at time: %v", currentOnTimeSec)
+	log.Printf("Send to server at time: %v", currentOnTimeSec)
 	_, _ = http.Get("burster.fun:30004/")
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
