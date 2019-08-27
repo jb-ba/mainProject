@@ -5,15 +5,18 @@ import (
 	"flag"
 	"log"
 	"net"
+	"net/http"
 	pb "statsServer/src/syncProto"
 	"strconv"
+	"strings"
 
 	grpc "google.golang.org/grpc"
 )
 
 var (
-	port   = flag.String("port", "3000", "Open port for connections.")
-	slaves = make(map[*streamSlave](chan int))
+	port     = flag.String("port", "3000", "Open port for connections.")
+	restport = flag.String("restport", ":3001", "Open port for connections.")
+	slaves   = make(map[*streamSlave](chan int))
 )
 
 type syncServer struct {
@@ -99,5 +102,21 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterSynchronizerServer(grpcServer, &syncServer{})
 	log.Printf("open grpc server on port: %v", *port)
+	go restServer()
 	grpcServer.Serve(lis)
+}
+
+func restServer() {
+	http.HandleFunc("/", sayHello)
+	log.Printf("open grpc server on port: %v", *restport)
+	if err := http.ListenAndServe(*restport, nil); err != nil {
+		log.Println(err)
+	}
+}
+
+func sayHello(w http.ResponseWriter, r *http.Request) {
+	message := r.URL.Path
+	message = strings.TrimPrefix(message, "/")
+	message = "Hello " + message
+	w.Write([]byte(message))
 }

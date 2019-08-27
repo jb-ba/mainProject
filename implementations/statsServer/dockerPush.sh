@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-export VERSION="v0.0.3"
+export VERSION="v0.0.4"
 sudo docker build . -t jbba/syncserver:$VERSION
 sudo docker push jbba/syncserver:$VERSION
