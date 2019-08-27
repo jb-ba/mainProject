@@ -121,11 +121,12 @@ void checkInput()
             ledOn = false;
         }
         else
-        {
-            digitalWrite(ledPin, HIGH);
-            Serial.println("LED on");
-            ledOn = true;
-        }
+            `
+            {
+                digitalWrite(ledPin, HIGH);
+                Serial.println("LED on");
+                ledOn = true;
+            }
         sendClick();
     }
 }

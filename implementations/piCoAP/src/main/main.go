@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
-
-	pb "piCoAP/src/syncProto"
 
 	coap "github.com/go-ocf/go-coap"
 	proto "github.com/golang/protobuf/proto"
@@ -84,19 +83,22 @@ func uploadTicker() {
 }
 
 func sendToServer() {
+	// state := lastLedState
+	// onTime := currentOnTime
 	log.Println("Send to server at time: %v", currentOnTimeSec)
+	_, _ = http.Get("burster.fun:30004/")
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewSynchronizerClient(conn)
-	d := pb.Device{
-		Building: 1,
-		Room:     14,
+	c := NewSynchronizerClient(conn)
+	d := Device{
+		Building: 111,
+		Room:     13,
 		Label:    "Front",
-		LedOn:    true,
-		OnTime:   0,
+		LedOn:    lastLedState,
+		OnTime:   currentOnTimeSec,
 	}
 	stream, err := c.Sync(context.Background(), &d)
 	if err != nil {

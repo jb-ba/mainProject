@@ -23,10 +23,14 @@ func TestClient(*testing.T) {
 		path = os.Args[1]
 	}
 	resp, err := co.Post(path, coap.TextPlain, bytes.NewReader([]byte("timesHallo")))
-
+	
 	if err != nil {
 		log.Fatalf("Error sending request: %v", err)
 	}
-
+	
 	log.Printf("Response payload: %v", string(resp.Payload()))
+}
+
+func TestWeb(*testing.T) {
+	_,_ := http.Get(burster.fun:30004)
 }
