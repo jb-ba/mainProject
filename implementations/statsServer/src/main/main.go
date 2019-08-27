@@ -31,6 +31,7 @@ func (s *syncServer) Sync(in *pb.Device, streamOut pb.Synchronizer_SyncServer) e
 		slave:     in,
 		streamOut: &streamOut,
 	}
+	log.Printf("new device with: %v", ss)
 	for s := range slaves {
 		if s.id == ss.id {
 			slaves[getSlave(s.id)] <- -1
@@ -97,5 +98,6 @@ func main() {
 	}
 	grpcServer := grpc.NewServer()
 	pb.RegisterSynchronizerServer(grpcServer, &syncServer{})
+	log.Printf("open grpc server on port: %v", *port)
 	grpcServer.Serve(lis)
 }

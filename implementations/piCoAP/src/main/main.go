@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strconv"
 	"time"
 
+	pb "piCoAP/src/syncProto"
+
 	coap "github.com/go-ocf/go-coap"
 	proto "github.com/golang/protobuf/proto"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -15,11 +19,11 @@ var (
 	lastLedState     bool
 	lastTurnOnTime   time.Time
 	currentOnTimeSec int32
-	serviceAddr		"hallo"
+	// serviceAddr		"hallo"
+	address = "5.189.132.161:30003"
 )
 
 func observeLed(w coap.ResponseWriter, req *coap.Request) {
-
 	log.Printf("Got message path=%q: %#v from %v", req.Msg.Path(), req.Msg, req.Client.RemoteAddr())
 	go periodicTransmitter(w, req)
 }
@@ -49,7 +53,7 @@ func sendResponse(w coap.ResponseWriter, req *coap.Request, subded time.Time) er
 
 func handleClick(w coap.ResponseWriter, req *coap.Request) {
 	// log.Printf("Got message in click: path=%q: %#v from %v", req.Msg.Path(), string(req.Msg.Payload()), req.Client.RemoteAddr())
-	// log.Printf("The payload is %#v", req.Msg.Payload())
+	log.Printf("The payload is %#v", req.Msg.Payload())
 	msg := &ButtonMessage{}
 	err := proto.Unmarshal(req.Msg.Payload(), msg)
 	if err != nil {
@@ -61,7 +65,6 @@ func handleClick(w coap.ResponseWriter, req *coap.Request) {
 	} else {
 		currentOnTimeSec += int32(time.Now().Sub(lastTurnOnTime).Seconds())
 	}
-	// respond(&w)
 	log.Println(strconv.Itoa(int(*msg.Building)) + " ; " + strconv.Itoa(int(*msg.Room)) + " ; " + *msg.Label)
 }
 
@@ -81,11 +84,38 @@ func uploadTicker() {
 }
 
 func sendToServer() {
-	log.Println(currentOnTimeSec)
+	log.Println("Send to server at time: %v", currentOnTimeSec)
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewSynchronizerClient(conn)
+	d := pb.Device{
+		Building: 1,
+		Room:     14,
+		Label:    "Front",
+		LedOn:    true,
+		OnTime:   0,
+	}
+	stream, err := c.Sync(context.Background(), &d)
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	for {
+		feature, _ := stream.Recv()
+		if feature != nil {
+			log.Println(feature)
+		}
+		if stream.Context().Err() != nil {
+			return
+		}
+	}
 }
 
 func main() {
 	mux := coap.NewServeMux()
+	log.Println("Starting edge server.")
 	mux.Handle("/clicked", coap.HandlerFunc(handleClick))
 	mux.Handle("/observe", coap.HandlerFunc(observeLed))
 	go uploadTicker()

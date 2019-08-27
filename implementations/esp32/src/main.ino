@@ -16,8 +16,8 @@ coapClient coap; //instance for coapclient
 String DEVICE_SECRET_KEY = "your-device_secret_key";
 
 IPAddress ip(10, 3, 141, 1);
-// int port = 30002;
-int port = 5688;
+int port = 30002;
+// int port = 5688;
 
 // for led control
 int ledPin = 27;
@@ -29,13 +29,12 @@ void callback_response(coapPacket &packet, IPAddress ip, int port)
     char p[packet.payloadlen + 1];
     memcpy(p, packet.payload, packet.payloadlen);
     p[packet.payloadlen] = NULL;
-    Serial.println("called");
+    Serial.println("response");
     //response from coap server
     if (packet.type == 3 && packet.code == 0)
     {
         Serial.println("ping ok");
     }
-
     Serial.println(p);
 }
 // observe(IPAddress ip, int port, char *url, uint8_t optionbuffer)
@@ -63,7 +62,14 @@ void loop()
     if (WiFi.status() != WL_CONNECTED)
     {
         ConnectToWiFi();
-        observeLedStatus();
+        if (WiFi.status() != WL_CONNECTED)
+        {
+            delay(2000);
+        }
+        else
+        {
+            observeLedStatus();
+        }
     }
     else
     {
@@ -87,6 +93,7 @@ void ConnectToWiFi()
         delay(500);
     }
     ip = WiFi.gatewayIP();
+    Serial.println(ip);
 }
 
 // just checks that bool and ledPin output are the same
@@ -95,12 +102,10 @@ void ensureLed()
     if (ledOn)
     {
         digitalWrite(ledPin, HIGH);
-        Serial.println("LED on");
     }
     else
     {
         digitalWrite(ledPin, LOW);
-        Serial.println("LED off");
     }
 }
 
@@ -112,11 +117,13 @@ void checkInput()
         if (ledOn)
         {
             digitalWrite(ledPin, LOW);
+            Serial.println("LED off");
             ledOn = false;
         }
         else
         {
             digitalWrite(ledPin, HIGH);
+            Serial.println("LED on");
             ledOn = true;
         }
         sendClick();

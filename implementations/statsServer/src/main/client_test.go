@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"log"
-	pb "statsServer/syncProto"
+	pb "statsServer/src/syncProto"
 	"testing"
 
 	grpc "google.golang.org/grpc"
@@ -21,7 +21,7 @@ func TestSendStats(t *testing.T) {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewSyncronizerClient(conn)
+	c := pb.NewSynchronizerClient(conn)
 	d := pb.Device{
 		Building: 1,
 		Room:     14,
@@ -29,7 +29,6 @@ func TestSendStats(t *testing.T) {
 		LedOn:    true,
 		OnTime:   0,
 	}
-
 	stream, err := c.Sync(context.Background(), &d)
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -52,7 +51,7 @@ func TestSwitchLight(t *testing.T) {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewSyncronizerClient(conn)
+	c := pb.NewSynchronizerClient(conn)
 	d := pb.Device{
 		Building: 1,
 		Room:     14,
@@ -72,7 +71,7 @@ func TestListDevices(t *testing.T) {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewSyncronizerClient(conn)
+	c := pb.NewSynchronizerClient(conn)
 	stream, err := c.ListDevices(context.Background(), &pb.Empty{})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)

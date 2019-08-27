@@ -7,5 +7,5 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/pion/dtls v1.5.0 // indirect
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80 // indirect
-	google.golang.org/grpc v1.22.1 // indirect
+	google.golang.org/grpc v1.22.1
 )
