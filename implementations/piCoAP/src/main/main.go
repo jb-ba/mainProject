@@ -77,14 +77,12 @@ func uploadTicker() {
 			currentOnTimeSec += int32(time.Now().Sub(lastTurnOnTime).Seconds())
 			lastTurnOnTime = time.Now()
 		}
-		sendToServer()
+		go sendToServer()
 		currentOnTimeSec = 0
 	}
 }
 
 func sendToServer() {
-	// state := lastLedState
-	// onTime := currentOnTime
 	log.Println("Send to server at time: %v", currentOnTimeSec)
 	_, _ = http.Get("burster.fun:30004/")
 	conn, err := grpc.Dial(address, grpc.WithInsecure())

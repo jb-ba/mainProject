@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	// address = "localhost:3000"
-	address = "burster.fun:30003"
+	address = "localhost:3000"
+	// address = "burster.fun:30003"
 )
 
 // TestSendStats sends the stats for one light bulb
@@ -28,7 +28,7 @@ func TestSendStats(t *testing.T) {
 		Room:     14,
 		Label:    "Front",
 		LedOn:    true,
-		OnTime:   0,
+		OnTime:   14,
 	}
 	stream, err := c.Sync(context.Background(), &d)
 	if err != nil {
