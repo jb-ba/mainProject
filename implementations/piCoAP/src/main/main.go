@@ -79,7 +79,6 @@ func uploadTicker() {
 			lastTurnOnTime = time.Now()
 		}
 		go sendToServer()
-		currentOnTimeSec = 0
 	}
 }
 
@@ -104,6 +103,7 @@ func sendToServer() {
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
+	currentOnTimeSec = 0
 	for {
 		feature, _ := stream.Recv()
 		if feature != nil {

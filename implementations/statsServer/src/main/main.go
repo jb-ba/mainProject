@@ -35,6 +35,7 @@ func (s *syncServer) Sync(in *pb.Device, streamOut pb.Synchronizer_SyncServer) e
 		streamOut: &streamOut,
 	}
 	log.Printf("new device with: %v", ss)
+	log.Println(ss.slave.GetOnTime())
 	log.Printf("device has been on for: %v", ss.slave.GetOnTime())
 	for s := range slaves {
 		if s.id == ss.id {
