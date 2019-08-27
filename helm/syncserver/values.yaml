@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: jbba/syncserver
-  tag: v0.0.6
+  tag: v0.0.8
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
